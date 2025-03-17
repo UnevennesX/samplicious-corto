@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Links Samplicious</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+
+    <style>
+        :root {
+            /* Colores principales */
+            --color-bg: #121212;
+            /* Un gris más oscuro */
+            --color-surface: #1e1e1e;
+            /* Un gris más claro */
+            --color-primary: #BB86FC;
+            /* Morado neón (Android) */
+            --color-secondary: #03DAC5;
+            /* Verde azulado neón (Android) */
+            --color-accent: #6200EE;
+            /* Morado oscuro */
+            --color-text: #ffffff;
+            --color-text-secondary: #9e9e9e;
+            /* Un gris más suave para el texto secundario */
+            --color-success: #4CAF50;
+            --color-error: #F44336;
+
+            /* Espaciado */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            /* Bordes y sombras */
+            --border-radius-sm: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+            --border-width: 1px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md);
+            line-height: 1.6;
+        }
+
+        main {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            color: var(--color-text);
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        h1 i {
+            margin-right: var(--spacing-sm);
+            font-size: 1.8rem;
+            color: var(--color-secondary);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.05);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            color: var(--color-text);
+            font-size: 1rem;
+            /* Transición suave para el focus */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
+            background-color: rgba(187, 134, 252, 0.1);
+            color: var(--color-text);
+        }
+
+        label {
+            position: absolute;
+            left: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-secondary);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        input[type="text"]:focus+label,
+        input[type="text"]:not(:placeholder-shown)+label {
+            transform: translateY(-170%) scale(0.8);
+            color: var(--color-primary);
+        }
+
+        button {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--color-primary);
+            border: none;
+            border-radius: var(--border-radius-md);
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-sm);
+            margin-top: -17px;
+        }
+
+        button:hover {
+            background: #9c6ade;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        button i {
+            font-size: 1.2rem;
+        }
+
+        #resultados {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .sugerencia {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.05);
+            box-shadow: var(--shadow-sm);
+            margin-top: 15px;
+        }
+
+        .sugerencia:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .sugerencia h3 {
+            color: var(--color-secondary);
+            margin-bottom: var(--spacing-md);
+            font-size: 1.15rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            transition: color 0.3s ease;
+        }
+
+        .sugerencia p {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+
+        .sugerencia strong {
+            color: var(--color-text);
+            font-weight: 500;
+        }
+
+        .generated-link {
+            display: block;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.02);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-sm);
+            margin-top: var(--spacing-sm);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--color-secondary);
+            cursor: pointer;
+            transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .generated-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--color-secondary);
+        }
+
+        .generated-link::after {
+            content: 'Copiar';
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--color-secondary);
+        }
+
+        .generated-link:hover::after {
+            opacity: 1;
+        }
+
+        .opciones-token {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-md);
+        }
+
+        .opcion-token {
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: rgba(255, 255, 255, 0.02);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-sm);
+            color: var(--color-text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+        }
+
+        .opcion-token:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .opcion-token.seleccionado {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+        }
+
+        .mensaje-error {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid var(--color-error);
+            color: var(--color-error);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            margin-top: var(--spacing-md);
+            font-size: 0.9rem;
+        }
+
+        .mensaje-exito {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid var(--color-success);
+            color: var(--color-success);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            margin-top: var(--spacing-md);
+            font-size: 0.9rem;
+        }
+
+        #ohnoVideo {
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        #ohnoVideo.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #ohnoVideo video {
+            width: 100%;
+            border-radius: var(--border-radius-lg);
+            display: block;
+        }
+
+        .loader {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            animation: rotation 1s linear infinite;
+        }
+
+        .loader::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-bottom-color: var(--color-primary);
+        }
+
+
+
+        #resultados.cargando {
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-lg);
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: var(--spacing-sm);
+            }
+
+            .container {
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius-md);
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            button {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .sugerencia {
+                padding: var(--spacing-md);
+            }
+        }
+
+        /* Animaciones adicionales */
+        .animate__fadeIn {
+            animation-duration: 0.3s;
+        }
+
+        .animate__slideInUp {
+            animation-duration: 0.3s;
+        }
+
+        /* Estilos adicionales */
+        .version {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: var(--color-text-secondary);
+            font-size: 0.75rem;
+        }
+
+        #formatoInfo {
+            margin-top: var(--spacing-md);
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        #formatoInfo h3 {
+            color: var(--color-secondary);
+            font-size: 1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        #formatoInfo ul {
+            list-style: disc;
+            padding-left: var(--spacing-md);
+        }
+
+        #formatoInfo li {
+            margin-bottom: var(--spacing-xs);
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="container animate__animated animate__fadeIn">
+            <h1 class="animate__animated animate__fadeInDown">
+
+                <i class="fas fa-link"></i> Samplicious👾RID, RSID & HASH <i class="fas fa-link"></i>
+
+            </h1>
+
+            <div class="input-group">
+                <input type="text" id="linkInput" placeholder="Introduce el link: https:// o http://"
+                    autocomplete="off">
+                <label for="linkInput"></label>
+            </div>
+
+            <button id="generarButton">
+                <i class="fas fa-magic"></i>
+                <span>Generar Sugerencias</span>
+            </button>
+
+            <div id="formatoInfo">
+                <h3>Formatos Soportados:</h3>
+                <ul>
+                    <li><code>https://www.samplicio.us/s/ClientCallBack.aspx?RIS=10&RID=xxx&RISN=xxx</code></li>
+                    <li><code>https://www.samplicio.us/router/ClientCallBack.aspx?RIS=10&RID=xxx&hash=xxx</code></li>
+                    <li>Detección automática en links <strong>ALL SAMPLICIOUS</strong> (si está definido en el archivo TXT).</li>
+                </ul>
+            </div>
+
+
+            <div id="resultados" class="animate__animated">
+                <!-- Aquí se mostrarán los resultados -->
+
+
+                </div>
+
+                <div id="ohnoVideo">
+                    <video id="ohnoVideoElement" controls muted loop>
+                        <source
+                            src="https://raw.githubusercontent.com/jsdcodes/oh-no-video/main/Oh%20no%20no%20no%20no%20laugh.mp4"
+                            type="video/mp4">
+                        Tu navegador no soporta el tag de video.
+                    </video>
+                </div>
+    </main>
+    </div>
+    <audio id="sugerenciaAudio" preload="auto">
+        <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_bite.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+        </audio>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+        <!-- Script JS AQUI -->
+
+
+
+
+
+        <script>
+ document.addEventListener('DOMContentLoaded', () => {
+            const linkInput = document.getElementById('linkInput');
+            const generarButton = document.getElementById('generarButton');
+            const resultadosDiv = document.getElementById('resultados');
+            const ohnoVideoDiv = document.getElementById('ohnoVideo');
+            const ohnoVideoElement = document.getElementById('ohnoVideoElement');
+            const datosURL = 'https://raw.githubusercontent.com/UnevennesX/-CheckLinks-/main/datos-info.txt';
+            const sugerenciaAudio = document.getElementById('sugerenciaAudio');
+            let dataCache = [];
+            let videoPlayed = false;
+            let idNotFoundErrorShown = false;
+
+            generarButton.addEventListener('click', function(e) {
+                //Ripple
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                const x = e.clientX - e.target.offsetLeft;
+                const y = e.clientY - e.target.offsetTop;
+
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+
+                generarLinks(); //Calling the function that runs after the ripple is done
+            });
+
+            function playSugerenciaAudio() {
+                sugerenciaAudio.play().then(() => {
+                    console.log("Audio reproducido correctamente.");
+                }).catch(error => {
+                    console.error("Error al reproducir el audio:", error);
+                    if (error.name === 'NotAllowedError') {
+                        console.warn(
+                            "La reproducción automática está bloqueada por el navegador. El usuario debe interactuar primero.");
+                    }
+                });
+            }
+
+            async function obtenerDatos() {
+                resultadosDiv.classList.add('cargando');
+                resultadosDiv.innerHTML = '';
+                try {
+                    const response = await fetch(datosURL);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.text();
+                    return parseData(data);
+                } catch (error) {
+                    console.error('Error al obtener los datos:', error);
+                    resultadosDiv.innerHTML =
+                        '<p class="mensaje-error animate__animated animate__shake">Error al cargar los datos.</p>';
+                    return [];
+                } finally {
+                    resultadosDiv.classList.remove('cargando');
+                }
+            }
+
+            function parseData(data) {
+                const entries = data.split('----------------').filter(Boolean);
+                const parsedData = entries.map(entry => {
+                    const lines = entry.trim().split('\n');
+                    const entryData = {};
+                    lines.forEach(line => {
+                        const [key, value] = line.split(': ').map(s => s.trim());
+                        if (key && value) {
+                            entryData[key] = value;
+                        }
+                    });
+                    return entryData;
+                }).filter(entry => entry['Tipo de Survey'] === 'Samplicious');
+
+                return parsedData;
+            }
+
+            function buscarCoincidencias(link, data) {
+                const url = new URL(link.startsWith('http') ? link : `https://${link}`);
+                const hostname = url.hostname;
+                const domain = hostname.replace(/^www\./, '');
+                const searchTerms = [hostname, domain];
+                let exactMatch = null
+                const matches = data.filter(item => {
+                    const nombre = item.Nombre.toLowerCase();
+                    const isMatch = searchTerms.some(term => nombre.includes(term.toLowerCase()));
+                    if (isMatch) {
+                        if (searchTerms.some(term => nombre === term.toLowerCase())) {
+                            exactMatch = item
+                        }
+                    }
+                    return isMatch
+                });
+                if (exactMatch && matches.length > 1) {
+                    return [exactMatch, ...matches.filter(match => match !== exactMatch)];
+                }
+                return matches;
+            }
+
+            async function generarSugerencia(link, match, index, tokenSeleccionado = null, totalMatches) {
+                let rid = null;
+                let risn = null;
+                let rvSid = null;
+                let hash = null; //Para el hash
+                const risnRegex = /^62\d{6}$/; //Formato del Nuevo RVSID (8 digitos y comienza con 62)
+                const ridRegex =
+                    /(67[0-9a-fA-F]{2,}-[0-9a-fA-F]{4,}-[0-9a-fA-F]{4,}-[0-9a-fA-F]{4,}-[0-9a-fA-F]{12,})/i;
+                const ridParamMatch = link.match(/[?&]RID=([a-zA-Z0-9-]+)/i);
+                if (ridParamMatch) {
+                    rid = ridParamMatch[1];
+                } else {
+                    const ridValueMatch = link.match(ridRegex);
+                    rid = ridValueMatch ? ridValueMatch[1] : null;
+                }
+                //Extraer HASh
+                const hashMatch = link.match(/[?&]hash=([a-zA-Z0-9_-]+)/i);
+                if (hashMatch) {
+                    hash = hashMatch[1];
+                }
+                //Extraer RISN RVSID
+                if (link.includes("RelevantID.aspx")) {
+                    const ssidMatch = link.match(/SSID=([a-f0-9-]+)/i);
+                    if (ssidMatch) {
+                        rid = ssidMatch[1];
+                    }
+                    const rvSidMatch = link.match(/RVSID=(\d+)/i);
+                    if (rvSidMatch) {
+                        rvSid = rvSidMatch[1]
+                    }
+                }
+                //Extraer RISN del nuevo tipo de link (ahora opcional)
+                if (link.startsWith("https://www.samplicio.us/s/ClientCallBack.aspx")) {
+                    const risnMatch = link.match(/RISN=([a-zA-Z0-9_-]+)/i);
+                    if (risnMatch) {
+                        risn = risnMatch[1];
+                    }
+                }
+                //URL base del TXT
+                let templateURL = new URL(match.URL);
+                let baseUrl = templateURL.origin + templateURL.pathname;
+                //Validacion del ID si fue encontrado sino muestro el video
+                if (!rid && !idNotFoundErrorShown) {
+                    idNotFoundErrorShown = true;
+                    ohnoVideoDiv.style.display = 'block';
+                    playVideo();
+                    return '<p class="mensaje-error animate__animated animate__shake">No se encontró un ID válido en el enlace.</p>';
+                } else if (!rid && idNotFoundErrorShown) {
+                    return '';
+                }
+                //Validar si tiene RISN en el TXT
+                if (match.URL.includes("RISN=") && !risn && !rvSid) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'El link del TXT requiere un valor para RISN (o un parámetro numérico de 8 dígitos que comience con 62), pero no se encontró en el enlace de entrada.',
+                    });
+                    return '';
+                }
+                //Generar LINK
+                let generatedLink = baseUrl + '?';
+                let firstParam = true;
+                const urlParams = new URLSearchParams(match.URL.split('?')[1]); //Extrae los parametros del txt
+                for (const [paramKey, paramValue] of urlParams.entries()) {
+                    let value = paramValue;
+                    if (paramKey.toUpperCase() === 'RID') {
+                        value = rid; //Override valor del ID
+                    } else if (paramKey.toUpperCase() === 'RIS') {
+                        value = '10'; //RIS SIEMPRE ES 10
+                    } else if (paramKey.toUpperCase() === 'RISN') {
+                        value = risn ? risn : rvSid; //valor extraido
+                    } else if (paramKey.toUpperCase() === 'RVSID') {
+                        value = rvSid ? rvSid : risn;
+                    } else if (paramKey.toUpperCase() === 'HASH') {
+                        value = hash;
+                    }
+                    if (value !== undefined && value !== null && value !== '') {
+                        generatedLink += (firstParam ? '' : '&') + `${paramKey}=${value}`;
+                        firstParam = false;
+                    }
+                }
+                copyToClipboard(generatedLink);
+                const suggestionTitle = totalMatches > 1 ? `<h3>Sugerencia ${index + 1}</h3>` : `<h3>Sugerencia</h3>`;
+                return `
+            <div class="sugerencia animate__animated animate__fadeInUp">
+                ${suggestionTitle}
+                <p><strong>Tipo de Survey:</strong> Samplicious</p>
+                <p><strong>Nombre de Survey:</strong> ${match.Nombre}</p>
+                <p><strong>Comentario:</strong> ${match.Comentario}</p>
+                <p><strong>Fecha:</strong> ${match.Fecha}</p>
+                <p><strong>Link Generado:</strong> <span class="generated-link" onclick="copyToClipboard('${generatedLink}')">${generatedLink}</span></p>
+            </div>
+        `;
+                }
+
+                function generarOpcionesToken(url) {
+                    const urlParams = new URL(url).searchParams
+                    const tokenParam = urlParams.get('token')
+                    if (tokenParam) {
+                        return [tokenParam]
+                    }
+                    const tokenMatches = url.match(/token=([a-f0-9-]+)/g);
+                    if (tokenMatches) {
+                        return tokenMatches.map(match => match.split("=")[1])
+                    }
+                    return []
+                }
+
+                function detectarTipoDeLink(link, dataCache) {
+                    const lowerLink = link.toLowerCase();
+                    let matchFound = false;
+                    let exactMatchFound = false;
+                    if (link === "ALL SAMPLICIOUS") {
+                        return "ALL SAMPLICIOUS";
+                    }
+                    const samplicioUsRegex =
+                        /^https:\/\/www\.samplicio\.us\/router\/ClientCallBack\.aspx\?RIS=10&RID=([a-zA-Z0-9-]+|x+)&hash=([a-zA-Z0-9_-]+)$/;
+                    if (samplicioUsRegex.test(link)) {
+                        return "SampliciousRegex";
+                    }
+
+                    //Nuevo tipo de link detectado
+                    const samplicioUsRegex2 =
+                        /^https:\/\/www\.samplicio\.us\/s\/ClientCallBack\.aspx\?RIS=10&RID=([a-zA-Z0-9-]+|x+)/; //Removido &RISN
+                    if (samplicioUsRegex2.test(link)) {
+                        return "SampliciousRegex2";
+                    }
+                    const coincidencias = buscarCoincidencias(link, dataCache);
+                    if (coincidencias.length > 0) {
+                        matchFound = true;
+                        for (const match of coincidencias) {
+                            const urlInTxt = match.URL;
+                            if (!urlInTxt.startsWith('https:\/\/www.samplicio.us\/router\/ClientCallBack\.aspx?') && !urlInTxt.startsWith('https:\/\/www.samplicio.us\/s\/ClientCallBack\.aspx?')) {
+                                exactMatchFound = true;
+                            } else {
+                                return "SampliciousTxt";
+                            }
+                        }
+                        if (exactMatchFound) return "ALL SAMPLICIOUS";
+                    }
+                    if (matchFound && !exactMatchFound) return "SampliciousTxt"
+                    return "Desconocido";
+                }
+
+                async function generarLinks() {
+                    resultadosDiv.innerHTML = '';
+                    ohnoVideoDiv.style.display = 'none';
+                    const link = linkInput.value.trim();
+                    idNotFoundErrorShown = false;
+
+                    if (!link) {
+                        resultadosDiv.innerHTML =
+                            '<p class="mensaje-error animate__animated animate__shake">Por favor, introduce un link.</p>';
+                        return;
+                    }
+
+                    if (dataCache.length === 0) {
+                        dataCache = await obtenerDatos();
+                    }
+
+                    if (dataCache.length === 0) {
+                        resultadosDiv.innerHTML =
+                            '<p class="mensaje-error animate__animated animate__shake">Error al cargar los datos. Intenta nuevamente más tarde.</p>';
+                        return;
+                    }
+
+                    const tipoDeLink = detectarTipoDeLink(link, dataCache);
+
+                    if (tipoDeLink === "ALL SAMPLICIOUS") {
+                        resultadosDiv.innerHTML =
+                            '<p class="mensaje-exito animate__animated animate__fadeIn">Este link se identifica como: ALL SAMPLICIOUS</p>';
+                        return;
+                    } else if (tipoDeLink === "SampliciousRegex" || tipoDeLink === "SampliciousTxt" || tipoDeLink ===
+                        "SampliciousRegex2") {
+                        const coincidencias = buscarCoincidencias(link, dataCache);
+                        if (coincidencias.length === 0) {
+                            resultadosDiv.innerHTML =
+                                '<p class="mensaje-error animate__animated animate__shake">No se encontraron coincidencias en el archivo TXT.</p>';
+                            ohnoVideoDiv.style.display = 'block';
+                            playVideo();
+                            return;
+                        }
+                        videoPlayed = false;
+                        resultadosDiv.innerHTML =
+                            '<p class="mensaje-exito animate__animated animate__fadeIn">Se encontraron coincidencias:</p>';
+                        let sugerenciasHTML = '';
+                        for (let i = 0; i < coincidencias.length; i++) { //Using a for loop allows for correct code execution
+                            let match = coincidencias[i];
+                            let suggestionHTML = await generarSugerencia(link, match, i, null, coincidencias.length);
+                            if (suggestionHTML) {
+                                sugerenciasHTML += suggestionHTML;
+                            }
+                        }
+                        resultadosDiv.innerHTML = sugerenciasHTML; //This will properly display
+
+                    } else {
+                        resultadosDiv.innerHTML =
+                            '<p class="mensaje-error animate__animated animate__shake">No se pudo detectar el tipo de link.</p>';
+                        ohnoVideoDiv.style.display = 'block';
+                        playVideo();
+                        return;
+                    }
+                }
+
+                function playVideo() {
+                    ohnoVideoElement.muted = false;
+                    ohnoVideoElement.volume = 1;
+                    const playPromise = ohnoVideoElement.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {}).catch(error => {
+                            console.error("Autoplay prevented:", error);
+                            ohnoVideoElement.controls = true;
+                        });
+                    }
+                    ohnoVideoElement.removeAttribute("loop");
+                }
+
+                function copyToClipboard(text) {
+                    navigator.clipboard.writeText(text)
+                        .then(() => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Link Copiado!',
+                                text: 'El link se ha copiado al portapapeles.',
+                                timer: 5000,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end',
+                            });
+                        })
+                        .catch(err => {
+                            console.error('Error al copiar al portapapeles: ', err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'No se pudo copiar el link.',
+                            });
+                        });
+                }
+
+                resultadosDiv.addEventListener('click', function(event) { //Adding copy to clipboard
+                    if (event.target.classList.contains('generated-link')) {
+                        const linkToCopy = event.target.textContent;
+                        copyToClipboard(linkToCopy);
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>
